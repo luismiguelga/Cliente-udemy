@@ -1,7 +1,12 @@
 <x-guest-layout>
     <form method="POST" action="{{ route('register') }}">
         @csrf
-
+         @if ($errors->has('credentials'))
+            <div class="mb-4 rounded-lg bg-red-100 border border-red-400 text-red-700 px-4 py-3">
+                <strong class="font-semibold">Error:</strong>
+                {{ $errors->first('credentials') }}
+            </div>
+        @endif
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
