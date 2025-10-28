@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\ApiService;
+use App\Services\AuthenticatedSessionService;
+use App\Utils\APIClient;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -28,13 +28,12 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $path = ApiService::getBaseUrl('api/user');
+        $response = APIClient::make()
+            ->withHeaders(['Accept' => 'application/json'])
+            ->withData($request->all())
+            ->post('api/user');
 
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-        ])->post($path, $request->all());
-
-        if ($response->status() === 422) {
+        if ($response->response()->status() === 422) {
             return back()->withErrors([
                 'credentials' => 'These credentials do not match our records',
             ]);
@@ -46,8 +45,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        ApiService::generateAccessToken($user, $response->json());
-
+        AuthenticatedSessionService::StoreAccessToken($user, $response->response()->json());
 
         event(new Registered($user));
 

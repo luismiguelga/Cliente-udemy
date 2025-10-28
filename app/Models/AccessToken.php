@@ -14,4 +14,7 @@ class AccessToken extends Model
         'user_id'
     ];
 
+    protected $casts = [
+        'expires_at' => 'datetime'
+    ];
 }

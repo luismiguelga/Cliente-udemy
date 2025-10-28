@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Services\ApiService;
+use App\Services\AuthenticatedSessionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,7 @@ class AuthenticatedSessionController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        $data = ApiService::validateLogin($request->all());
+        $data = AuthenticatedSessionService::validateLogin($request->all());
 
         if (! $data) {
             return back()->withErrors([
@@ -31,7 +32,7 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        ApiService::generateAccessToken($data['user'], $data['service']);
+        AuthenticatedSessionService::storeAccessToken($data['user'], $data['service']);
 
         return redirect()->route('dashboard');
     }
