@@ -4,9 +4,7 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', fn () => to_route('login'));
 
 Route::get('/dashboard', function () {
     return view('dashboard');

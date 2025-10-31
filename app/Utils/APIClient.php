@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Services\AccessTokenService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
 
@@ -18,6 +19,15 @@ class APIClient
     public static function make(): self
     {
         return new self;
+    }
+
+    public function withBearerToken():self
+    {
+        $accessToken = AccessTokenService::resolveAuthorization();
+
+        $this->headers['Authorization'] = 'Bearer '.$accessToken->access_token;
+
+        return $this;
     }
 
     public function withHeaders(array $headers): self
@@ -59,6 +69,7 @@ class APIClient
             'refresh_token' => auth()->user()->accessToken->refresh_token,
             'client_id' => config('services.api-udemy.client_id'),
             'client_secret' => config('services.api-udemy.client_secret'),
+            'scope' => 'create-post read-post update-post delete-post',
         ];
 
         return $this;
