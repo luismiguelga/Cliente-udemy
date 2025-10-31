@@ -21,9 +21,10 @@ class AuthenticatedSessionService
                     'password' => request('password'),
                     'scope' => 'create-post read-post update-post delete-post'
                 ])
-                ->post('oauth/token');
+                ->post('oauth/token')
+                ->response();
 
-            $response = $response->response()->json();
+            $response = $response->json();
             $user->accessToken()?->delete();
 
             $user->accessToken()->create([
@@ -44,9 +45,8 @@ class AuthenticatedSessionService
                 'email' => $request['email'],
                 'password' => $request['password'],
             ])
-            ->post('api/login');
-
-        $response = $response->response();
+            ->post('api/login')
+            ->response();
 
         if ($response->status() === 404) {
             return null;
